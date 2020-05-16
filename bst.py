@@ -12,21 +12,19 @@ class Student:
         self.name = name
 
     def __lt__(self, kq):
-        # FIXME: Write this function
-        pass
+        return self.grade < kq.grade
 
     def __gt__(self, kq):
-        # FIXME: Write this function
-        pass
+        return self.grade > kq.grade
 
     def __eq__(self, kq):
-        # FIXME: Write this function
-        pass
+        return self.grade == kq.grade
 
     def __str__(self):
         if self.grade is not None:
-            # FIXME: Write this function
-            pass
+            n = str(self.name)
+            g = str(self.grade)
+            return n + "'s grade is " + g
 
 
 class TreeNode:
@@ -62,7 +60,22 @@ class BST:
         Args:
             val: Item to be stored in the new node
         """
-        # FIXME: Write this function
+        node = TreeNode(val)
+
+        parent = None
+        cur = self.root
+        while cur is not None:
+            parent = cur
+            if node.val < cur.val:
+                cur = cur.left
+            else:
+                cur = cur.right
+        if parent is None:
+            self.root = node
+        elif node.val < parent.val:
+            parent.left = node
+        else:
+            parent.right = node
 
     def in_order_traversal(self, cur_node=None, visited=None) -> []:
         """
@@ -93,7 +106,21 @@ class BST:
         Returns:
             A list of nodes in the specified ordering
         """
-        # FIXME: Write this function
+        # first call
+        if visited is None:
+            visited = []
+            self.pre_order_traversal(self.root, visited)
+
+        # Base case
+        if cur_node is None:
+            return visited
+
+        # pre order traversal sequence of steps: NLR
+        # append, cur.left, cur.right, return
+        visited.append(cur_node.val)
+        self.pre_order_traversal(cur_node.left, visited)
+        self.pre_order_traversal(cur_node.right, visited)
+        return visited
 
     def post_order_traversal(self, cur_node=None, visited=None) -> []:
         """
@@ -102,7 +129,21 @@ class BST:
         Returns:
             A list of nodes in the specified ordering
         """
-        # FIXME: Write this function
+        # first call
+        if visited is None:
+            visited = []
+            self.post_order_traversal(self.root, visited)
+
+        # Base case
+        if cur_node is None:
+            return visited
+
+        # pre order traversal sequence of steps: LRN
+        # cur.left, cur.right, append, return
+        self.post_order_traversal(cur_node.left, visited)
+        self.post_order_traversal(cur_node.right, visited)
+        visited.append(cur_node.val)
+        return visited
 
     def contains(self, kq):
         """
@@ -158,3 +199,14 @@ class BST:
             True if the root was removed, otherwise False
         """
         # FIXME: Write this function
+
+
+# tree = BST([12, 5, 25, 0])
+# print(tree)
+# tree.add(10)
+# print(tree)
+# tree.add(11)
+# print(tree)
+
+tree = BST([10, 10, -1, 5, -1])
+print(tree.post_order_traversal())
