@@ -9,7 +9,6 @@ from bst import BST, Student
 from gradescope_utils.autograder_utils.decorators import weight
 import unittest
 
-
 # Helper function for building BSTs
 # Args - Values: Array of values to be added to the BST
 # Return - populated BST

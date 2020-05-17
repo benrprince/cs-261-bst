@@ -155,7 +155,17 @@ class BST:
         Returns:
             True if kq is in the tree, otherwise False
         """
-        # FIXME: Write this function
+        cur = self.root
+        while cur is not None:
+            if cur.val == kq:
+                return True
+            elif kq < cur.val:
+                cur = cur.left
+            else:
+                cur = cur.right
+
+        # if the value is not found, return false
+        return False
 
     def left_child(self, node):
         """
@@ -167,20 +177,104 @@ class BST:
         Returns:
             The left-most node of the given subtree
         """
-        # FIXME: Write this function
+        while node.left is not None:
+            node = node.left
+        return node
+
+    def get_parent(self, node):
+        """
+        Returns the parent of the argument passed
+        Args:
+             node: node passed to function
+        """
+        if node is self.root:
+            return None
+        else:
+            cur = self.root
+            while cur is not node:
+                if node.val < cur.val:
+                    if cur.left.val == node.val:
+                        return cur
+                    else:
+                        cur = cur.left
+                else:
+                    if cur.right.val == node.val:
+                        return cur
+                    else:
+                        cur = cur.right
+
+            # If we get here the node was not found
+            return False
 
     def remove(self, kq):
         """
         Removes node with key k, if the node exists in the BSTree.
 
         Args:
-            node: root of Binary Search Tree
             kq: key of node to remove
 
         Returns:
             True if k is in the tree and successfully removed, otherwise False
         """
-        # FIXME: Write this function
+        # if the node is the root then call self.remove_first()
+        if kq == self.root.val:
+            self.remove_first()
+            return
+
+        # node at kq
+        if self.contains(kq):
+            node = self.root
+            while node.val != kq:
+                if kq < node.val:
+                    node = node.left
+                else:
+                    node = node.right
+        else:
+            return False
+
+        # parent of passed node
+        kq_p = self.get_parent(node)
+
+        # if node has no children, point kq_p to None
+        if node.left is None and node.right is None:
+            if node.val < kq_p.val:
+                kq_p.left = None
+            else:
+                kq_p.right = None
+        else:
+            # node's in-order successor, if there isn't a node.right
+            # move up node.left into its position and return
+            if node.right is None:
+                # in-order successor
+                ios = node.left
+                if node.val < kq_p.val:
+                    kq_p.left = ios
+                else:
+                    kq_p.right = ios
+                # free up node
+                node.left = None
+                node.right = None
+                return True
+            else:
+                ios = self.left_child(node.right)
+
+            # ios parent
+            ios_p = self.get_parent(ios)
+            ios.left = node.left
+            if ios is not node.right:
+                ios_p.left = ios.right
+                ios.right = node.right
+
+            # update kq_p to point to ios instead of node
+            if node.val < kq_p.val:
+                kq_p.left = ios
+            else:
+                kq_p.right = ios
+
+        # free up node
+        node.left = None
+        node.right = None
+        return True
 
     def get_first(self):
         """
@@ -189,7 +283,10 @@ class BST:
         Returns:
             val of the root node, return None if BSTree is empty
         """
-        # FIXME: Write this function
+        if self.root is None:
+            return None
+        else:
+            return self.root.val
 
     def remove_first(self):
         """
@@ -198,15 +295,31 @@ class BST:
         Returns:
             True if the root was removed, otherwise False
         """
-        # FIXME: Write this function
+        if self.root is None:
+            return False
+        else:
+            # root has no children
+            if self.root.left is None and self.root.right is None:
+                self.root = None
+                return True
+            # root doesn't have a right child
+            elif self.root.right is None:
+                self.root = self.root.left
+                return True
+            else:
+                # root has both right and left children
+                # in-order successor
+                ios = self.left_child(self.root.right)
+                # ios parent
+                ios_p = self.get_parent(ios)
 
-
-# tree = BST([12, 5, 25, 0])
-# print(tree)
-# tree.add(10)
-# print(tree)
-# tree.add(11)
-# print(tree)
-
-tree = BST([10, 10, -1, 5, -1])
-print(tree.post_order_traversal())
+                if ios_p == self.root:
+                    ios.left = self.root.left
+                    self.root = ios
+                    return True
+                else:
+                    ios.left = self.root.left
+                    ios_p.left = ios.right
+                    ios.right = self.root.right
+                    self.root = ios
+                    return True
